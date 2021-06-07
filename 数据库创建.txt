@@ -1,0 +1,132 @@
+create database bryansmall;
+use bryansmall;
+
+create table category
+(
+	id varchar(40) primary key,
+	name varchar(40) not null unique,
+	description varchar(255)
+);
+
+
+
+create table user
+(
+	id varchar(40) primary key,
+	username varchar(40) not null unique,
+	password varchar(40) not null,
+	phone varchar(20) not null,
+	cellphone varchar(20) not null,
+	email varchar(40) not null,
+	address varchar(255) not null
+);
+create table good
+(
+	id varchar(40) primary key,
+	name varchar(40) not null unique,
+	price decimal(8,2) not null,
+	brand varchar(40) not null,
+	image varchar(255) not null,
+	description varchar(255),
+	category_id varchar(40),
+	sellerid varchar(40),
+	constraint sellerid_FK foreign key(sellerid) references user(id),
+	constraint category_id_FK foreign key(category_id) references category(id) on delete cascade
+);
+create table orders
+(
+	id varchar(40) primary key,
+	ordertime datetime not null,
+	status boolean not null,
+	price decimal(8,2) not null,
+	user_id varchar(40),
+	constraint user_id_FK foreign key(user_id) references user(id)
+);	
+
+create table orderitem
+(
+	id varchar(40) primary key,
+	quantity int not null,
+	price decimal(8,2) not null,
+	good_id varchar(40),
+	order_id varchar(40),
+	constraint good_id_FK foreign key(good_id) references good(id),
+	constraint order_id_FK foreign key(order_id) references orders(id)
+);
+create table useriplog
+(
+time datetime not null,
+userid varchar(40) not null,
+addr varchar(40) not null,
+status varchar(10),
+constraint user_id_FK2 foreign key(userid) references user(id)
+);
+create table oplog
+(
+time datetime not null,
+userid varchar(40) not null,
+op varchar(20),
+constraint user_id_FK3 foreign key(userid) references user(id)
+);
+create table pushscore
+(
+userid varchar(40) not null,
+categoryid varchar(40) not null,
+score int,
+constraint user_id_FK4 foreign key(userid) references user(id) on delete cascade,
+constraint category_id_FK2 foreign key(categoryid) references category(id) on delete cascade
+);
+
+insert into user(id,username,password,phone,cellphone,email,address) value('1','Bryan','123456','15013200022','15013242742','lsqbryan@163.com','广州番禺华南理工大学');
+insert into user(id,username,password,phone,cellphone,email,address) values('2','lsq','123456','15013200022','15013242742','lsqbryan@163.com','广州番禺华南理工大学');
+insert into category(id,name,description) values('1','食品','包括零食、饮料等食品');
+insert into category(id,name,description) values('2','生活用品','包括洗发水、牙刷等生活用品');
+insert into category(id,name,description) values('3','书籍','包括教科书、课外书等各种书籍');
+
+insert into good(id,name,price,brand,image,description,category_id,sellerid) values('1','饼干','10','奥利奥','1.jpg','奥利奥牌的饼干（条装）','1','1');
+insert into good(id,name,price,brand,image,description,category_id,sellerid) values('2','可乐','3','百事','2.jpg','百事可乐（瓶装）','1','1');
+insert into good(id,name,price,brand,image,description,category_id,sellerid) values('3','洗发水','20','飘柔','3.jpg','飘柔洗发水（瓶装）','2','2');
+insert into good(id,name,price,brand,image,description,category_id,sellerid) values('4','牙刷','5','高露洁','4.jpg','高露洁牙刷（两只装）','2','2');
+
+
+insert into orders(id,ordertime,status,price,user_id) values('1','2020-11-20 20:00:00','0','23','1');
+insert into orders(id,ordertime,status,price,user_id) values('2','2020-11-20 20:00:00','0','30','2');
+
+insert into orderitem(id,quantity,price,good_id,order_id) values('1','2','20','1','1');
+insert into orderitem(id,quantity,price,good_id,order_id) values('2','1','3','2','1');
+insert into orderitem(id,quantity,price,good_id,order_id) values('1','1','20','3','2');
+insert into orderitem(id,quantity,price,good_id,order_id) values('2','2','10','4','2');
+
+insert into pushscore(userid,categoryid,score) values('1','1',10);
+insert into pushscore(userid,categoryid,score) values('1','2',0);
+insert into pushscore(userid,categoryid,score) values('1','3',0);
+insert into pushscore(userid,categoryid,score) values('2','1',0);
+insert into pushscore(userid,categoryid,score) values('2','2',10);
+insert into pushscore(userid,categoryid,score) values('2','3',0);
+
+create table privilege
+(
+	id varchar(40) primary key,
+	name varchar(40),
+	description varchar(255)
+);
+
+create table user_privilege
+(
+	user_id varchar(40),
+	privilege_id varchar(40)
+);
+
+insert into privilege(id,name,description) values('1','添加分类','plus');
+insert into privilege(id,name,description) values('2','删除分类','deplus');
+insert into privilege(id,name,description) values('3','添加商品','plusgood');
+insert into privilege(id,name,description) values('4','删除商品','deplusgood');
+
+
+insert into user_privilege(user_id,privilege_id) values('1','1');
+insert into user_privilege(user_id,privilege_id) values('1','2');
+insert into user_privilege(user_id,privilege_id) values('1','3');
+insert into user_privilege(user_id,privilege_id) values('1','4');
+insert into user_privilege(user_id,privilege_id) values('2','3');
+insert into user_privilege(user_id,privilege_id) values('2','4');
+
